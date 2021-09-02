@@ -8,7 +8,7 @@ source = requests.get('http://www.webmineral.com/data/index.html').text
 soup = BeautifulSoup(source, 'lxml')
 
 # open the file you want to write to
-csv_file = open('portfolio_scrape', 'w')
+csv_file = open('portfolio_scraper', 'w')
 
 # initialize writer
 csv_writer = csv.writer(csv_file)
