@@ -44,7 +44,7 @@ def get_mol_wt(string: str):
     s = string.split(':')
     mol_wt = s[1].strip().split('=')
     val = mol_wt[1].split(' ')
-    csv_writer.writerow([mol_wt[0], val[0], val[2]])
+    csv_writer.writerow([mol_wt[0], val[1], val[2]])
     # print(mol_wt)
 
 # format and write composition to csv
@@ -69,6 +69,11 @@ success = 0
 # total Exceptions thrown
 fail = 0
 for mineral in mineral_names:
+    # ignore these minerals
+    first_part = str(mineral[0: 5])
+    last_part = str(mineral[-6])
+    if first_part == 'IMA20' or last_part != '.shtml':
+        next
     try:
         # soup-ify each link
         link = 'http://www.webmineral.com/data/{0}#.YTEkIdPnNqs'.format(
@@ -83,7 +88,7 @@ for mineral in mineral_names:
             found_text = td.parent.text
             trimmed_text = found_text.strip().replace('\n', '').replace('\xa0', '')
             all_text.append(trimmed_text)
-
+        # print(all_text)
         mineral_name = str(mineral[:-6]).replace('%20', ' ')
         print(mineral_name)
         # use helper functions to extract needed data
@@ -91,7 +96,7 @@ for mineral in mineral_names:
         get_chem_formula(all_text[0])
         get_mol_wt(all_text[1])
         get_composition(all_text[0:10])
-        # get_img
+        # get_img (gonna need a soup of img elements)
         csv_writer.writerow([])
         success += 1
         # uncomment to restrict loop
@@ -105,8 +110,11 @@ for mineral in mineral_names:
 end_time = int(round(time.time(), 2))
 # total_time is in min
 total_time = (end_time - start_time) / 60
-print(f'DONE! Total Time: {total_time} min')
+print('--Done!--')
+print(f'Total Time: {total_time} min')
 print(f'Total success: {success}')
 print(f'Total fail: {fail}')
+success_rate = round((success / (success + fail)) * 100, 0)
+print(f'Success Rate: {success_rate}%')
 # close file
 csv_file.close()
